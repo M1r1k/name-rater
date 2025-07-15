@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { loadAllData, createRatedName, upsertRating, upsertWeight, deleteRatedName } from './lib/dataService';
+import { loadAllData, createRatedName, upsertRating, upsertWeight, deleteRatedName, updateComments } from './lib/dataService';
 
 interface Dimension {
   key: string;
@@ -21,6 +21,7 @@ interface Name {
   id: number;
   name: string;
   ratings: NameRatings;
+  comments?: string;
   isBlacklisted?: boolean;
 }
 
@@ -103,8 +104,14 @@ const BabyNameRater = () => {
   const [topNamesData, setTopNamesData] = useState<TopNameData[]>([]);
   const [yearlyStats, setYearlyStats] = useState<any[]>([]);
   const [genderStats, setGenderStats] = useState<any[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestedGenderFilter, setSuggestedGenderFilter] = useState<string>('both');
+  const [showSuggestions, setShowSuggestions] = useState(() => {
+    const saved = localStorage.getItem('showSuggestions');
+    return saved ? JSON.parse(saved) : false;
+  });
+  const [suggestedGenderFilter, setSuggestedGenderFilter] = useState<string>(() => {
+    const saved = localStorage.getItem('suggestedGenderFilter');
+    return saved || 'both';
+  });
   const [sortBy, setSortBy] = useState<'blacklisted' | 'finished' | 'not-finished'>('not-finished');
 
   // Load data from Supabase on component mount
@@ -137,6 +144,7 @@ const BabyNameRater = () => {
               dad: dadRatings,
               mom: momRatings
             },
+            comments: ratedName.comments,
             isBlacklisted: ratedName.is_blacklisted
           };
         });
@@ -188,6 +196,16 @@ const BabyNameRater = () => {
       processStatisticsData(nameData);
     }
   }, [globalGenderFilter]);
+
+  // Save showSuggestions to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('showSuggestions', JSON.stringify(showSuggestions));
+  }, [showSuggestions]);
+
+  // Save suggestedGenderFilter to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('suggestedGenderFilter', suggestedGenderFilter);
+  }, [suggestedGenderFilter]);
 
   const getFilteredData = (data: NameData[], genderFilter: string): NameData[] => {
     if (genderFilter === 'both') return data;
@@ -281,7 +299,6 @@ const BabyNameRater = () => {
           };
           setNames([...names, newName]);
           setCurrentName('');
-          setShowSuggestions(false);
         }
       } catch (error) {
         console.error('Error adding name:', error);
@@ -305,7 +322,6 @@ const BabyNameRater = () => {
           };
           setNames([...names, blacklistedName]);
           setCurrentName('');
-          setShowSuggestions(false);
         }
       } catch (error) {
         console.error('Error adding blacklisted name:', error);
@@ -315,7 +331,6 @@ const BabyNameRater = () => {
 
   const selectSuggestedName = (nameData: TopNameData) => {
     setCurrentName(nameData.name);
-    setShowSuggestions(false);
   };
 
   const getFilteredSuggestions = () => {
@@ -380,6 +395,22 @@ const BabyNameRater = () => {
       ));
     } catch (error) {
       console.error('Error updating rating:', error);
+    }
+  };
+
+  const updateNameComments = async (nameId: number, comments: string) => {
+    try {
+      // Save to Supabase
+      await updateComments(nameId, comments);
+      
+      // Update local state
+      setNames(names.map(name => 
+        name.id === nameId 
+          ? { ...name, comments }
+          : name
+      ));
+    } catch (error) {
+      console.error('Error updating comments:', error);
     }
   };
 
@@ -802,6 +833,11 @@ const BabyNameRater = () => {
                               ⚠️
                             </span>
                           )}
+                          {name.comments && name.comments.trim() && (
+                            <span className="text-blue-500" title="Has comments">
+                              💬
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2">
                           {!isBlacklistedName && (
@@ -829,6 +865,20 @@ const BabyNameRater = () => {
                       
                       {expandedNames[name.id] && !isBlacklistedName && (
                         <div className="p-4 border-t border-gray-200 bg-gray-50">
+                          {/* Comments section */}
+                          <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              💬 Comments (shared between both parents)
+                            </label>
+                            <textarea
+                              value={name.comments || ''}
+                              onChange={(e) => updateNameComments(name.id, e.target.value)}
+                              placeholder="Add your thoughts about this name..."
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
+                              rows={3}
+                            />
+                          </div>
+
                           {/* Personal feeling - largest input */}
                           <div className="mb-6">
                             <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">

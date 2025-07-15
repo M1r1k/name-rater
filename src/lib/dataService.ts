@@ -1,10 +1,10 @@
 import { supabase, type RatedName, type NameRating, type NameWeight } from './supabase'
 
 // Rated names management
-export const createRatedName = async (name: string, isBlacklisted: boolean = false): Promise<RatedName | null> => {
+export const createRatedName = async (name: string, isBlacklisted: boolean = false, comments?: string): Promise<RatedName | null> => {
   const { data, error } = await supabase
     .from('rated_names')
-    .insert({ name, is_blacklisted: isBlacklisted })
+    .insert({ name, is_blacklisted: isBlacklisted, comments })
     .select()
     .single()
 
@@ -54,6 +54,22 @@ export const deleteRatedName = async (nameId: number): Promise<void> => {
   if (error) {
     console.error('Error deleting rated name:', error)
   }
+}
+
+export const updateComments = async (nameId: number, comments: string): Promise<RatedName | null> => {
+  const { data, error } = await supabase
+    .from('rated_names')
+    .update({ comments })
+    .eq('id', nameId)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Error updating comments:', error)
+    return null
+  }
+
+  return data
 }
 
 // Ratings management

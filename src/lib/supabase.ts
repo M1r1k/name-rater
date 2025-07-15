@@ -14,6 +14,7 @@ export interface RatedName {
   id: number
   name: string
   is_blacklisted: boolean
+  comments?: string
   created_at: string
 }
 

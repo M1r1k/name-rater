@@ -1,6 +1,6 @@
 # Name Rater - Danish Baby Names Analysis
 
-This project parses Danish baby names data from HTML files and stores it in SQLite for analysis.
+This project parses Danish baby names data from HTML files and stores it in SQLite for analysis. It also includes a React web interface for rating and comparing baby names.
 
 ## Features
 
@@ -8,6 +8,9 @@ This project parses Danish baby names data from HTML files and stores it in SQLi
 - **SQLite Database**: Stores parsed data with proper indexing
 - **Analysis Views**: Pre-built views for common queries
 - **CLI Tools**: Command-line scripts for data processing
+- **React Web Interface**: Interactive name rating and comparison tool
+- **Supabase Integration**: Cloud database for name ratings and comments
+- **Migration System**: Database schema versioning and updates
 
 ## Data Structure
 
@@ -45,6 +48,11 @@ Each record includes:
 4. **Or run both steps at once**:
    ```bash
    pnpm run setup-db
+   ```
+
+5. **Run database migrations** (if using Supabase):
+   ```bash
+   pnpm run migrate
    ```
 
 ## Database Schema
@@ -102,15 +110,28 @@ ORDER BY year;
 - `data/` - HTML files (2015.html to 2024.html)
 - `scripts/parse-names.js` - HTML parser
 - `scripts/import-to-sqlite.js` - Database importer
+- `scripts/run-migrations.js` - Database migration runner
 - `sql/schema.sql` - Database schema
+- `migrations/` - Database migration scripts
 - `parsed-names.json` - Intermediate JSON data
 - `names.db` - SQLite database
 
+## Web Interface Features
+
+The React web interface includes:
+- **Name Rating**: Rate names on multiple dimensions (personal feeling, locality, internationality, etc.)
+- **Parent Comparison**: Compare ratings between parents using scatter plots
+- **Comments**: Add shared comments for both parents about each name
+- **Statistics**: View Danish baby name trends and popularity data
+- **Suggestions**: Get popular name suggestions from the statistics data
+- **Export/Import**: Save and load rating data
+
 ## Development
 
-The project also includes a React web interface (not used in CLI mode):
-- `src/` - React components
+The project includes both CLI tools and a React web interface:
+- `src/` - React components and web interface
 - `vite.config.ts` - Build configuration
+- `supabase-schema.sql` - Supabase database schema
 
 ## Data Source
 
