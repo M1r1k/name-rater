@@ -52,6 +52,7 @@ INSERT INTO name_weights (dimension_key, weight) VALUES
     ('internationality', 8),
     ('transliterations', 7),
     ('shortVersion', 6),
+    ('cringeAssociations', 5),
     ('popularity', 5),
     ('ukrainianFriendly', 4),
     ('denmarkAttitude', 3),

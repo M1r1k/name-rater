@@ -72,10 +72,11 @@ const DIMENSIONS: Dimension[] = [
   { key: 'transliterations', name: 'Name transliterations (readability)', weight: 7 },
   { key: 'shortVersion', name: 'Short/cute version', weight: 6 },
   { key: 'popularity', name: 'Not too popular', weight: 5 },
+  { key: 'cringeAssociations', name: 'Cringe associations', weight: 5 },
   { key: 'ukrainianFriendly', name: 'Ukrainian friendly short version', weight: 4 },
   { key: 'denmarkAttitude', name: 'Attitude in Denmark', weight: 3 },
   { key: 'lastNameSound', name: 'How sounds with last name', weight: 2 },
-  { key: 'tragedeigh', name: 'How much of tragedeigh', weight: 1 }
+  { key: 'tragedeigh', name: 'How much of tragedeigh', weight: 1 },
 ];
 
 const BabyNameRater = () => {
@@ -355,7 +356,6 @@ const BabyNameRater = () => {
     }
     return allNamesData
       .filter(nameData => nameData.gender === suggestedGenderFilter)
-      .slice(0, 50);
   };
 
   const updateRating = async (nameId: number, parent: 'dad' | 'mom', dimension: string, value: number) => {
@@ -829,8 +829,22 @@ const BabyNameRater = () => {
                       
                       {expandedNames[name.id] && !isBlacklistedName && (
                         <div className="p-4 border-t border-gray-200 bg-gray-50">
+                          {/* Personal feeling - largest input */}
+                          <div className="mb-6">
+                            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                              <label className="text-base font-medium text-gray-700 flex-1">
+                                {DIMENSIONS[0].name}
+                              </label>
+                              <SegmentedControl
+                                value={name.ratings[selectedParent][DIMENSIONS[0].key]}
+                                onChange={(value) => updateRating(name.id, selectedParent, DIMENSIONS[0].key, value)}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Other 10 dimensions in 2 columns */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {DIMENSIONS.map(dimension => (
+                            {DIMENSIONS.slice(1).map(dimension => (
                               <div key={dimension.key} className="flex items-center justify-between">
                                 <label className="text-sm text-gray-700 flex-1">
                                   {dimension.name}
@@ -984,8 +998,32 @@ const BabyNameRater = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-medium mb-4 text-blue-600">Artem's Weights</h3>
-                  <div className="space-y-3">
-                    {DIMENSIONS.map(dimension => (
+                  
+                  {/* Personal feeling - largest input */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <label className="text-base font-medium text-gray-700 flex-1">
+                        {DIMENSIONS[0].name}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="range"
+                          min="0"
+                          max="10"
+                          value={weights.dad[DIMENSIONS[0].key]}
+                          onChange={(e) => updateWeight('dad', DIMENSIONS[0].key, e.target.value)}
+                          className="w-24"
+                        />
+                        <span className="w-8 text-center text-sm font-medium">
+                          {weights.dad[DIMENSIONS[0].key]}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Other 10 dimensions in 2 columns */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {DIMENSIONS.slice(1).map(dimension => (
                       <div key={dimension.key} className="flex items-center justify-between">
                         <label className="text-sm text-gray-700 flex-1">
                           {dimension.name}
@@ -1010,8 +1048,32 @@ const BabyNameRater = () => {
 
                 <div>
                   <h3 className="text-lg font-medium mb-4 text-pink-600">Kate's Weights</h3>
-                  <div className="space-y-3">
-                    {DIMENSIONS.map(dimension => (
+                  
+                  {/* Personal feeling - largest input */}
+                  <div className="mb-6">
+                    <div className="flex items-center justify-between p-3 bg-pink-50 rounded-lg border border-pink-200">
+                      <label className="text-base font-medium text-gray-700 flex-1">
+                        {DIMENSIONS[0].name}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="range"
+                          min="0"
+                          max="10"
+                          value={weights.mom[DIMENSIONS[0].key]}
+                          onChange={(e) => updateWeight('mom', DIMENSIONS[0].key, e.target.value)}
+                          className="w-24"
+                        />
+                        <span className="w-8 text-center text-sm font-medium">
+                          {weights.mom[DIMENSIONS[0].key]}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Other 10 dimensions in 2 columns */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {DIMENSIONS.slice(1).map(dimension => (
                       <div key={dimension.key} className="flex items-center justify-between">
                         <label className="text-sm text-gray-700 flex-1">
                           {dimension.name}
