@@ -69,12 +69,15 @@ function main() {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   const dataDir = path.join(__dirname, '..', 'data');
-  const outputFile = path.join(__dirname, '..', 'parsed-names.json');
+  const outputFile = path.join(__dirname, '..', 'public', 'parsed-names.json');
   
   console.log('Parsing HTML files...');
   
   const allData = [];
-  const years = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
+  const years = [];
+  for (let y = 1985; y <= 2024; y++) {
+    years.push(y);
+  }
   
   years.forEach(year => {
     const filePath = path.join(dataDir, `${year}.html`);

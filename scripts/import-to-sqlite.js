@@ -10,7 +10,7 @@ const { Database } = pkg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_PATH = path.join(__dirname, '..', 'names.db');
-const JSON_DATA_PATH = path.join(__dirname, '..', 'parsed-names.json');
+const JSON_DATA_PATH = path.join(__dirname, '..', 'public', 'parsed-names.json');
 const SCHEMA_PATH = path.join(__dirname, '..', 'sql', 'schema.sql');
 
 function createDatabase() {
